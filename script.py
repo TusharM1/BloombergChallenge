@@ -1,11 +1,18 @@
+#!/usr/bin/env python
+
 import json
+import sys
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 json_data = json.load(open("SBHSData.json"))
 
 sets = [['area', set()], ['version', set()], ['uptime', set()], ['hostname', set()]]
 lists = [['area', []], ['version', []], ['uptime', []], ['hostname', []]]
 
+# Check if there is a way to SELECT areas like an SQL Query instead of this
+# Shouldn't need this, there should be a library to get json atributes and cast to set
 for element in json_data:
 	for item in sets:
 		if item[0] in element:
@@ -16,16 +23,42 @@ for element in json_data:
 		if item[0] in element:
 			item[1].append(element[item[0]])
 		else:
-			item[1].append("")		
+			item[1].append("")	
+
+
+# for element in json_data:
+# 	if 'area' in element:
+
 
 print("Sets Length", len(sets[0][1]), len(sets[1][1]), len(sets[2][1]), len(sets[3][1]))
 print("List Length", len(lists[0][1]), len(lists[1][1]), len(lists[2][1]), len(lists[3][1]))
 
-print(sets[0][1])
+# objects = tuple(sets[0][1])
+# y_pos = np.arange(len(objects))
+# performance = [10, 8, 6, 4, 2, 1, 10, 8, 6, 4, 2, 1]
+# print(objects)
+ 
+# print(sys.version) 
+
+# plt.bar(y_pos, performance, align='center', alpha=0.5)
+# plt.xticks(y_pos, objects)
+# plt.xlabel('Languages')
+# plt.ylabel('Usage')
+# plt.title('Programming language usage')
+
+# x = lists[2][1], 
+y = [x for x in range(0, len(lists[2][1]), 50)]
+print(y)
+
+plt.hist(lists[2][1], y, histtype='bar')
+
+plt.show()
+
+# print(sets[0][1])
 
 # plt.plot([1, 2, 3, 4], [1, 4, 3, 16])
+# matplotlib.pyplot.bar(x, height, width=0.8, bottom=None, *, align='center', data=None, **kwargs)
 # plt.ylabel('Element')
-# plt.show()
 
 # print(len(area_set), len(version_set), len(uptime_set), len(hostname_set))
 
