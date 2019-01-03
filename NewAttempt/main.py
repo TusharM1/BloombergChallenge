@@ -1,50 +1,111 @@
 #!/usr/bin/env python
 
+## IMPORT STATEMENTS
+
+import matplotlib
+matplotlib.use('TkAgg') 
+
+import matplotlib.pyplot as plt
 import pandas as pd
 import tkinter as tk
 
 ## READING JSON DATA
 
-sample_data = pd.read_json("SBHSData.json")
+def main():
 
-attribute_list = list(sample_data)
-attribute_list_length = len(attribute_list)
+	global attribute_list, lists, sets
 
-sets = [set(),] * attribute_list_length
-lists = [[],] * attribute_list_length
+	sample_data = pd.read_json("SBHSData.json")
 
-for i in range(attribute_list_length):
-	lists[i] = list(sample_data[attribute_list[i]])
-	sets[i] = set(sample_data[attribute_list[i]])
+	attribute_list = list(sample_data)
+	attribute_list_length = len(attribute_list)
 
-# print(sets, "\n\n\n", lists)
+	lists = [[],] * attribute_list_length
+	sets = [set(),] * attribute_list_length
+
+	for i in range(attribute_list_length):
+		lists[i] = list(sample_data[attribute_list[i]])
+		sets[i] = set(sample_data[attribute_list[i]])
+
+	uptime_list, uptime_set = [], set()
+	for i in sample_data.uptime:
+		try: 
+			uptime_list.append(int(i))
+			uptime_set.add(int(i))
+		except:
+			pass
+	
+	lists[2] = uptime_list
+	sets[2] = uptime_set
+
+	gui()
 
 ## DRAWING GUI
 
-window = tk.Tk()
-window.title("Bloomberg SBHSData JSON Project")
-window.geometry('640x480')
+def gui():
 
-index = tk.IntVar()
+	global sets, lists
 
-def clicked():
-	print(index.get())
-	print(lists[index.get()])
+	# TODO create a dictionary (or other data structure) to hold configuration data
+	# Or create a class and instantiate it and update the state, possibly make this function a class
+	# Python isn't really used for OOP (I think), so maybe stay away from that paradigm
 
-radio_set = tk.Frame(window)
+	window = tk.Tk()
+	window.title("Bloomberg SBHSData JSON Project")
+	window.geometry('640x480')
+	window.configure(padx=20, pady=20)
 
-radio_area = tk.Radiobutton(radio_set, text='area', variable=index, value=0, command=clicked).pack(side='left')
-radio_version = tk.Radiobutton(radio_set, text='version', variable=index, value=1, command=clicked).pack(side='left')
-radio_uptime = tk.Radiobutton(radio_set, text='uptime', variable=index, value=2, command=clicked).pack(side='left')
-radio_hostname = tk.Radiobutton(radio_set, text='hostname', variable=index, value=3, command=clicked).pack(side='left')
+	index = tk.IntVar() 
 
-radio_set.pack()
+	global options_frame, button
 
-def sumbit():
-	
+	def change_frame():
+		global options_frame, attribute_list, button
+		button.forget()
+		options_frame.forget()
+		options_frame = tk.Frame(window)
+		options_frame.configure(background='orange')
+		options_frame.pack(fill='both', expand=True, padx=20, pady=20)
+		tk.Label(options_frame, text=attribute_list[index.get()]).pack()
+		button.pack()
 
-button = tk.Button(window, text="Click Me", command=submit).pack()
+	radio_buttons = tk.Frame(window)
+	radio_buttons.pack()
 
-window.mainloop()
+	options_frame = tk.Frame(window)
+	button = tk.Button(window, text="Sumbit", command=lambda: parse_options(index.get()))
+	button.pack()
 
-## 
+	tk.Radiobutton(radio_buttons, text='area', variable=index, command=change_frame, value=0).pack(side='left')
+	tk.Radiobutton(radio_buttons, text='version', variable=index, command=change_frame, value=1).pack(side='left')
+	tk.Radiobutton(radio_buttons, text='uptime', variable=index, command=change_frame, value=2).pack(side='left')
+	tk.Radiobutton(radio_buttons, text='hostname', variable=index, command=change_frame, value=3).pack(side='left')
+
+	change_frame()
+
+	# string = tk.StringVar()
+	# name_frame = tk.Frame(window)
+	# name_frame.pack()
+	# name = tk.Entry(name_frame, textvariable=string).pack()
+
+	window.mainloop()
+
+## PARSE GUI OPTIONS
+
+def parse_options(index):
+
+	print(index)
+
+	plot(index)
+
+## DRAW PLOT
+
+def plot(index):
+
+	global lists
+
+	plt.hist(lists[2], [x for x in range(0, len(lists[2]), 150)], histtype='bar')
+
+	plt.show()
+
+main()
