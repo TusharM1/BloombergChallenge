@@ -103,8 +103,6 @@ def gui():
 		# 	button.grid(row=2, pady=20)
 		# pass
 
-
-
 		# options_frame.forget()
 		# # options_frame = Frame(frame)
 		# options_frame.configure(background=color_list[index.get()].format())
@@ -136,14 +134,29 @@ def gui():
 
 	# AREA FRAME
 	area_frame = Frame(frame)
-	Label(area_frame, text='Select Areas:').pack()
-	vars = []
-	for attribute in attribute_list:
-		var = BooleanVar()
-		Checkbutton(area_frame, text=attribute, variable=var).pack()
-		vars.append(var)
-	button = Button(area_frame, text="Submit", command=lambda: parse_options(0))
-	button.pack()	
+	Grid.rowconfigure(area_frame, 2, weight=1)
+	Grid.columnconfigure(area_frame, 0, weight=1)
+	Label(area_frame, text='Select Filter:').grid(row=0)
+	def uptime_options():
+		frame = Frame(area_frame)
+		Label(frame, text='Select Areas:').grid(row=1)
+		vars = []
+		for attribute in sets[0]:
+			var = BooleanVar()
+			Checkbutton(frame, text=attribute, variable=var).grid(row=2, sticky='nsew')
+			vars.append(var)
+		frame.grid(row=2, sticky='nswe')	
+	index = IntVar()	
+	radio_buttons_frame = Frame(area_frame)
+	radio_buttons_frame.grid(row=1)
+	# selected_areas = 
+	Radiobutton(radio_buttons_frame, variable=index, text='area', value=0).pack(side='left')
+	Radiobutton(radio_buttons_frame, variable=index, text='version', value=1).pack(side='left')
+	Radiobutton(radio_buttons_frame, variable=index, command=uptime_options, text='uptime', value=2).pack(side='left')
+	Radiobutton(radio_buttons_frame, variable=index, text='hostname', value=3).pack(side='left')		
+	# button = Button(area_frame, text="Submit", command=lambda: parse_options([var.get() for var in vars]))
+	button = Button(area_frame, text="Submit", command=lambda: parse_options('area', attribute_list[index.get()], ))
+	button.grid(row=4)	
 
 	# VERSION FRAME
 	version_frame = Frame(frame)
@@ -160,13 +173,16 @@ def gui():
 	Label(hostname_frame, text='hostname').pack()	
 	Button(hostname_frame, text="Submit", command=lambda: print('hostname')).pack()
 			
-
 	notebook.add(area_frame, text='area')
 	notebook.add(version_frame, text='version')
 	notebook.add(uptime_frame, text='uptime')
 	notebook.add(hostname_frame, text='hostname')
 
+	def testfunc():
+		print('test successful')
+
 	notebook.pack(fill='both', expand=True)	
+	notebook.bind('<2>', testfunc)
 	# area_frame.pack(fill='both', expand=True)
 
 
@@ -200,20 +216,29 @@ def gui():
 
 ## PARSE GUI OPTIONS
 
-def parse_options(index):
-
-	print(index)
-
+def parse_options(dependent, independent, selected_areas=None):
+	global lists
+	print(dependent, independent)
+	if dependent == 'area':
+		if independent == 'area':
+			print('pie chart')
+		elif independent == 'version':
+			print('pie chart')
+		elif independent == 'uptime':	
+			print('histogram')
+		elif independent == 'hostname':
+			plt.hist(lists[2], [x for x in range(0, len(lists[2]), 150)], histtype='bar')	
+	plt.show()		
 	# plot(index)
 
 ## DRAW PLOT
 
-def plot(index):
+# def plot(index):
 
-	global lists
+# 	global lists
 
-	plt.hist(lists[2], [x for x in range(0, len(lists[2]), 150)], histtype='bar')
+# 	plt.hist(lists[2], [x for x in range(0, len(lists[2]), 150)], histtype='bar')
 
-	plt.show()
+# 	plt.show()
 
 main()
