@@ -1,17 +1,11 @@
 import pandas as pd
 
-# global attribute_list, attribute_list_length, lists, sets
+global attribute_list, attribute_list_length, lists, sets
 
 sample_data = pd.read_json("SBHSData.json")
 
-# attribute_list = ['area', 'version', 'uptime', 'hostname']
-# attribute_list_length = len(attribute_list)
-
 attribute_lists = {'area': [], 'version': [], 'uptime': [], 'hostname': []}
 attribute_sets = {'area': set(), 'version': set(), 'uptime': set(), 'hostname': set()}
-
-# lists = [[],] * attribute_list_length
-# sets = [set(),] * attribute_list_length
 
 for i in attribute_lists.keys():
 	attribute_lists[i] = list(sample_data[i])
