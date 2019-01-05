@@ -11,6 +11,7 @@ import pandas as pd
 from tkinter import *
 import tkinter.ttk as ttk
 import math
+import sys
 # from tkinter import *
 # from tkinter.ttk import *
 
@@ -82,10 +83,38 @@ def main():
 				else:
 					version_per_area_counts[area][data_as_list[entry][3]] = 0
 
+	# version_uptime = {}
+	# for version in attribute_lists['version']:
+	# 	if not version in version_uptime:
+	# 		version_uptime[version] = 
+	# 	for entry in range(len(data_as_list)):
+	# 		if data_as_list[entry][0] == area:
+	# 			if data_as_list[entry][3] in version_per_area_counts[area]:
+	# 				version_per_area_counts[area][data_as_list[entry][3]] = version_per_area_counts[area][data_as_list[entry][3]] + 1
+	# 			else:
+	# 				version_per_area_counts[area][data_as_list[entry][3]] = 0				
+
 	hostname_dictionary = {}				
 	# data = list(sample_data.iloc)
 	for i in range(len(attribute_lists['hostname'])):
 		hostname_dictionary[attribute_lists['hostname'][i]] = list(sample_data.iloc[i])
+
+	# version_dictionary = {}				
+	# # data = list(sample_data.iloc)
+	# for i in range(len(attribute_lists['version'])):
+	# 	if attribute_lists['version'][i] in version_dictionary:
+	# 		try :
+	# 			version_dictionary[attribute_lists['version'][i]][0] += 1
+	# 			version_dictionary[attribute_lists['version'][i]][1] += int(attribute_lists['uptime'][i])
+	# 			version_dictionary[attribute_lists['version'][i]][2].append(int(attribute_lists['uptime'][i]))
+	# 		except:
+	# 			pass					
+	# 	else:
+	# 		version_dictionary[attribute_lists['version'][i]] = [1, 0, [0]]
+	# for i in version_dictionary:
+	# 	version_dictionary[i][2] = max(version_dictionary[i][2])	
+	# print(list(version_dictionary.values()))
+	# print(list(version_counts))	
 	# for i in sample_data.hostname:
 	# 	print(i)
 	# print()
@@ -143,15 +172,16 @@ def gui():
 	Grid.rowconfigure(text_frame, 1, weight=1)
 	Grid.columnconfigure(text_frame, 0, weight=1)
 
-	global statistics_text
+	global statistics_text, version_selected
 	intro_text = StringVar()
 	intro_text.set('This application is able to parse JSON data and create charts and graphs. \nUse the tabs and options to choose which data to show and click the filter button')
 	intro = Label(text_frame, textvariable=intro_text, fg="white", wraplength=200, font=("San Francisco", 14))
 	intro.grid(row=2, sticky='nsew', ipadx=10, ipady=10)
 	statistics_text = StringVar()
-	Label(text_frame, text='Statistics', fg="white", font=("San Francisco", 18), background='#4b86b4').grid(row=0, pady=(20, 5))
+	statistics_title = Label(text_frame, text='Statistics', fg="white", font=("San Francisco", 18))
+	statistics_title.grid(row=0, sticky='nsew', ipady=5)
 	statistics = Label(text_frame, textvariable=statistics_text, fg="white", font=("San Francisco", 14))
-	statistics.grid(row=1, sticky='n')
+	statistics.grid(row=1, sticky='n', pady=10)
 
 	options_frame = Frame(frame)
 	options_frame.place(in_=frame, relwidth=.6, relheight=1)
@@ -185,6 +215,19 @@ def gui():
 	# VERSION FRAME
 	version_frame = Frame(options_frame)
 	version_frame.grid(row=0, column=0, sticky='nswe')
+
+	Grid.rowconfigure(version_frame, 0, weight=1)
+	Grid.columnconfigure(version_frame, 0, weight=1)
+
+	version_selected = StringVar()
+
+	version_inner_frame = Frame(version_frame)
+	version_inner_frame.place(in_=version_frame, relx=.5, rely=.45, anchor='center')
+
+	Label(version_inner_frame, text='Choose Version').grid()
+
+	version_options = OptionMenu(version_inner_frame, version_selected, *list(attribute_sets['version']))
+	version_options.grid()
 
 	# Label(version_frame, text='version').pack()
 
@@ -239,19 +282,23 @@ def gui():
 				plt.hist(lists[2], [x for x in range(0, len(lists[2]), 150)], histtype='bar')
 			plt.show()
 		if dependent == 'version':
+			if not version_selected.get() == '' and not version_selected.get() == 'nan':
+				version_attributess = version_dictionary[version_selected.get()]
+				statistics_text.set('Area: %s\n Version: %s\n Uptime: %s' %(hostname_attributes[0], hostname_attributes[3], hostname_attributes[2]))		
+			# print('version')	
+		if dependent == 'uptime':
 			plt.pie(version_counts.values, labels=version_counts.keys(), autopct='%1.1f%%')
 			# plt.tight_layout()
 			plt.show()
-			print('version')	
-		if dependent == 'uptime':
-			print('uptime')				
+			# print('uptime')				
 		if dependent == 'hostname':
 			global hostname_dictionary
-			if hostname.get() in hostname_dictionary:
-				hostname_attributes = hostname_dictionary[hostname.get()]
-				statistics_text.set('Area: %s\n Version: %s\n Uptime: %s' %(hostname_attributes[0], hostname_attributes[3], hostname_attributes[2]))
-			else:
-				statistics_text.set('Hostname could not be found')
+			if not hostname.get() == '':
+				if hostname.get() in hostname_dictionary:
+					hostname_attributes = hostname_dictionary[hostname.get()]
+					statistics_text.set('Area: %s\n Version: %s\n Uptime: %s' %(hostname_attributes[0], hostname_attributes[3], hostname_attributes[2]))
+				else:
+					statistics_text.set('Hostname could not be found')
 
 	# notebook.bind('<<NotebookTabChanged>>', configuration)b
 
@@ -272,6 +319,7 @@ def gui():
 	text_frame.configure(background='#4b86b4')
 	statistics.configure(background='#4b86b4')
 	intro.configure(background='#63ace5')
+	statistics_title.configure(background='#19486e')
 	options_frame.configure(background='#19486e')
 
 	window.mainloop()
