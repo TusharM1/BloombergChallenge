@@ -195,8 +195,11 @@ def gui():
 	area_frame = Frame(options_frame)
 	area_frame.grid(row=0, column=0, sticky='nswe')
 
+	Grid.rowconfigure(area_frame, 0, weight=1)
+	Grid.columnconfigure(area_frame, 0, weight=1)
+
 	radio_button_frame = Frame(area_frame)
-	radio_button_frame.pack(pady=15)
+	radio_button_frame.grid(pady=15)
 
 	radio_button_choice = StringVar()
 	radio_button_choice.set('area')
@@ -308,12 +311,12 @@ def gui():
 	filter_button = Button(options_frame, command=filter_options, text="Filter")
 	filter_button.pack(pady=20)
 
-	style = ttk.Style()
+	# style = ttk.Style()
 
-	style.theme_create( "yummy", settings={
-	        "TNotebook": {"background": 'green'}} )
+	# style.theme_create( "yummy", settings={
+	#         "TNotebook": {"background": 'green'}} )
 
-	# style.theme_use("yummy")
+	# # style.theme_use("yummy")
 
 	window.configure(background='#2a4d69')
 	text_frame.configure(background='#4b86b4')
